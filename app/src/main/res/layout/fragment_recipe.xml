@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context=".ui.recipe.RecipeFragment">
 
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/lv_recipe"/>
+
     <TextView
         android:id="@+id/text_recipe"
         android:layout_width="match_parent"

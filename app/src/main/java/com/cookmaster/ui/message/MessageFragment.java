@@ -32,7 +32,8 @@ public class MessageFragment extends Fragment {
 
         binding = FragmentMessageBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-        this.lv_message = root.findViewById(R.id.listview_message);
+
+        this.lv_message = root.findViewById(R.id.lv_message);
         MessageAdapter messageAdapter = new MessageAdapter(getClassMessage(), getContext());
         this.lv_message.setAdapter(messageAdapter);
         this.lv_message.setOnItemClickListener(new AdapterView.OnItemClickListener() {

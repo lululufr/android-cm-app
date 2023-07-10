@@ -22,6 +22,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.squareup.picasso.Picasso;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
@@ -33,6 +34,10 @@ public class LoginActivity extends AppCompatActivity {
     private CheckBox checkBox;
 
     private ImageView logo;
+
+    private String url = "https://cookmaster.lululu.fr/api/recipe/";
+    private RequestQueue mRequestQueue;
+    private StringRequest mStringRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,6 +55,19 @@ public class LoginActivity extends AppCompatActivity {
             usernameEditText.setText(savedIds.getString("username", ""));
             passwordEditText.setText(savedIds.getString("password", ""));
         }
+
+        //A REUTILISER POUR LES REQUETES API
+        /*loginButton.setOnClickListener(new View.OnClickListener() {
+                                           @Override
+                                           public void onClick(View view) {
+                                               sendAndRequestResponse();
+                                           }
+
+                                        }
+        );*/
+
+
+
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -75,30 +93,3 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 }
-
-    //A REUTILISER POUR LES REQUETES API
-    /*RequestQueue file = Volley.newRequestQueue(LoginActivity.this);
-    String url = "127.0.0.1/api/recette";
-                Log.e("Test", url);
-
-                        StringRequest r = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-@Override
-public void onResponse(String response) {
-        try {
-        JSONObject jso = new JSONObject(response);
-
-        String url_image = jso.getString("url");
-
-                            Picasso.get().load(url_image).into(logo);
-        Log.e("Test", url_image);
-        }catch(Exception e){
-        Log.e("Test", "OOOOOAAAAAA");
-        }
-        }
-        }, new Response.ErrorListener() {
-@Override
-public void onErrorResponse(VolleyError error) {
-
-        }
-        });
-        file.add(r);*/
