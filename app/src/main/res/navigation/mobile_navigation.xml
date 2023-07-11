@@ -18,8 +18,13 @@
         tools:layout="@layout/fragment_event" />
 
     <fragment
-        android:id="@+id/navigation_messages"
-        android:name="com.cookmaster.ui.message.MessageFragment"
-        android:label="@string/title_messages"
+        android:id="@+id/navigation_conversations"
+        android:name="com.cookmaster.ui.conversation.ConversationFragment"
+        android:label="@string/title_conversations"
         tools:layout="@layout/fragment_message" />
+    <fragment
+        android:id="@+id/navigation_nfc"
+        android:name="com.cookmaster.ui.nfc.NfcFragment"
+        android:label="@string/title_nfc"
+        tools:layout="@layout/fragment_nfc" />
 </navigation>

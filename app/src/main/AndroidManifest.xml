@@ -19,9 +19,6 @@
             android:name=".MainActivity">
         </activity>
         <activity
-            android:name=".NFCActivity">
-        </activity>
-        <activity
             android:name=".LoginActivity"
             android:exported="true">
             <intent-filter>

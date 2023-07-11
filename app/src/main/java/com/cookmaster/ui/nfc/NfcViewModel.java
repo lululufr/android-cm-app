@@ -1,16 +1,16 @@
-package com.cookmaster.ui.event;
+package com.cookmaster.ui.nfc;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class EventViewModel extends ViewModel {
+public class NfcViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public EventViewModel() {
+    public NfcViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is event fragment");
+        mText.setValue("Bienvenue dans l'onglet NFC ! Qu'allez vous gagner aujourd'hui ?");
     }
 
     public LiveData<String> getText() {

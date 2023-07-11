@@ -1,38 +1,73 @@
 package com.cookmaster.classes;
 
 public class Message {
-    private String from;
-    private String to;
+
+    private String fromName;
+
+    private int fromId;
+
+    private String toName;
+
+    private int toId;
 
     private String content;
 
-    public Message(String from, String to, String content) {
-        this.from = from;
-        this.to = to;
+    private String date;
+
+    public Message(String fromName, int fromId, String toName, int toId, String content, String date) {
+        this.fromName = fromName;
+        this.fromId = fromId;
+        this.toName = toName;
+        this.toId = toId;
         this.content = content;
+        this.date = date;
     }
 
-    public String getFrom() {
-        return from;
+    public String getFromName() {
+        return fromName;
     }
 
-    public String getTo() {
-        return to;
+    public void setFromName(String fromName) {
+        this.fromName = fromName;
+    }
+
+    public int getFromId() {
+        return fromId;
+    }
+
+    public void setFromId(int fromId) {
+        this.fromId = fromId;
+    }
+
+    public String getToName() {
+        return toName;
+    }
+
+    public void setToName(String toName) {
+        this.toName = toName;
+    }
+
+    public int getToId() {
+        return toId;
+    }
+
+    public void setToId(int toId) {
+        this.toId = toId;
     }
 
     public String getContent() {
         return content;
     }
 
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
-
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getDate() {
+        return date;
+    }
+
+    public void setDate(String date) {
+        this.date = date;
     }
 }

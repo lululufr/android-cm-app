@@ -1,4 +1,4 @@
-package com.cookmaster.ui.recipe;
+package com.cookmaster.ui.conversation;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -8,16 +8,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
+
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
+
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -27,12 +25,10 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cookmaster.R;
-import com.cookmaster.classes.Ingredient;
-import com.cookmaster.classes.Recipe;
-import com.cookmaster.databinding.FragmentRecipeBinding;
+import com.cookmaster.classes.Conversation;
+import com.cookmaster.databinding.FragmentConversationBinding;
+import com.cookmaster.ui.conversation.ConversationAdapter;
 import com.cookmaster.ui.conversation.message.MessageFragment;
-import com.cookmaster.ui.recipe.openrecipe.OpenRecipeFragment;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -41,82 +37,65 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-public class RecipeFragment extends Fragment {
+public class ConversationFragment extends Fragment {
 
-    private FragmentRecipeBinding binding;
-    private ListView lv_recipe;
-    private final ArrayList<Recipe> recipesList = new ArrayList<>();
+    private FragmentConversationBinding binding;
+    private ListView lv_conversation;
+    private ConversationAdapter conversationAdapter;
 
-    private static final String URL = "https://cookmaster.lululu.fr/api/recipe/";
+    private ArrayList<Conversation> conversationList = new ArrayList<>();
 
-    private RecipeAdapter recipeAdapter;
-
-
+    private static final String URL = "https://cookmaster.lululu.fr/api/conversation/";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
-        binding = FragmentRecipeBinding.inflate(inflater, container, false);
+        binding = FragmentConversationBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        getRecipe();
-
-        this.lv_recipe = root.findViewById(R.id.lv_recipe);
-        recipeAdapter = new RecipeAdapter(recipesList, getContext());
-        this.lv_recipe.setAdapter(recipeAdapter);
-        this.lv_recipe.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        this.lv_conversation = root.findViewById(R.id.lv_message);
+        getConversation();
+        conversationAdapter = new ConversationAdapter(conversationList, getContext());
+        this.lv_conversation.setAdapter(conversationAdapter);
+        this.lv_conversation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                OpenRecipeFragment openRecipeFragment = new OpenRecipeFragment();
+                MessageFragment messageFragment = new MessageFragment();
                 FragmentManager fragmentManager = getParentFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                /*Bundle bundle = new Bundle();
+                Bundle bundle = new Bundle();
                 bundle.putInt("toId", conversationList.get(i).getToId());
                 bundle.putString("toName", conversationList.get(i).getToName());
-                openRecipeFragment.setArguments(bundle);*/
-                fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, openRecipeFragment);
+                messageFragment.setArguments(bundle);
+                fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, messageFragment);
                 fragmentTransaction.commit();
             }
         });
         return root;
     }
 
-    public void getRecipe() {
+
+    public void getConversation(){
         RequestQueue file = Volley.newRequestQueue(requireActivity());
         Log.e("Test1", URL);
-
         StringRequest r = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
-                    recipeAdapter.clear();
+                    conversationAdapter.clear();
 
                     JSONObject jso = new JSONObject(response);
-                    String urlRecipes = jso.getString("recipes");
-                    Log.e("Test2", urlRecipes);
-
-                    JSONArray recipes = jso.getJSONArray("recipes");
-                    for(int i = 0; i < recipes.length(); i++){
-                        JSONObject recipe = recipes.getJSONObject(i);
-
-                        ArrayList<Ingredient> ingredients = new ArrayList<>();
-                        JSONArray ingredientsJson = recipe.getJSONArray("ingredients");
-                        for(int j = 0; j < ingredientsJson.length(); j++){
-                            JSONObject ingredient = ingredientsJson.getJSONObject(j);
-                            ingredients.add(new Ingredient(ingredient.getString("ingredients_name"), ingredient.getInt("amount"), ingredient.getString("unit")));
-                        }
-
-                        ArrayList<String> tags = new ArrayList<>();
-                        JSONArray tagsJson = recipe.getJSONArray("tags");
-                        for(int j = 0; j < tagsJson.length(); j++){
-                            JSONObject tag = tagsJson.getJSONObject(j);
-                            tags.add(tag.getString("tag_name"));
-                        }
-
-                        recipesList.add(new Recipe(recipe.getString("title"), ingredients, tags,recipe.getString("content"), "https://cookmaster.lululu.fr/storage/" + recipe.getString("image")));
-                        updateListView();
+                    String urlConversation = jso.getString("convs");
+                    Log.e("TestResponse", urlConversation);
+                    JSONArray jsa = jso.getJSONArray("convs");
+                    for (int i = 0; i < jsa.length(); i++) {
+                        JSONObject js = jsa.getJSONObject(i);
+                        String toName = js.getString("username");
+                        String toAvatar = js.getString("profil_picture");
+                        int toId = js.getInt("id");
+                        conversationList.add(new Conversation(toName, toId, "https://cookmaster.lululu.fr/storage/" + toAvatar));
                     }
-
+                    conversationAdapter.notifyDataSetChanged();
                 }catch(Exception e){
                     Log.e("Test2", "OOOOOAAAAAA");
                 }
@@ -128,6 +107,7 @@ public class RecipeFragment extends Fragment {
             }
 
         })
+
         {@Override
         public Map<String, String> getHeaders() throws AuthFailureError {
             SharedPreferences savedIds = requireActivity().getSharedPreferences("savedIds", Context.MODE_PRIVATE);
@@ -138,14 +118,9 @@ public class RecipeFragment extends Fragment {
             headers.put("Content-Type", "application/json");
             return headers;
         }
-        };
+            ;   };
 
         file.add(r);
-    }
-
-
-    private void updateListView() {
-        recipeAdapter.notifyDataSetChanged();
     }
 
     @Override

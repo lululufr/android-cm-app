@@ -2,5 +2,6 @@
     <string name="app_name">Cookmaster</string>
     <string name="title_recipe">Recettes</string>
     <string name="title_event">Évènements</string>
-    <string name="title_messages">Messages</string>
+    <string name="title_conversations">Conversations</string>
+    <string name="title_nfc">NFC</string>
 </resources>

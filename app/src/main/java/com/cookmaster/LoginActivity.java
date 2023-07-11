@@ -14,6 +14,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -25,6 +26,9 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoginActivity extends AppCompatActivity {
 
     private Button loginButton;
@@ -33,11 +37,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private CheckBox checkBox;
 
-    private ImageView logo;
-
-    private String url = "https://cookmaster.lululu.fr/api/recipe/";
-    private RequestQueue mRequestQueue;
-    private StringRequest mStringRequest;
+    private final String API_URL = "https://cookmaster.lululu.fr/api/connexion";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +47,6 @@ public class LoginActivity extends AppCompatActivity {
         usernameEditText = findViewById(R.id.editText_username);
         passwordEditText = findViewById(R.id.editText_password);
         checkBox = findViewById(R.id.checkBox);
-        logo = findViewById(R.id.logoView);
         SharedPreferences savedIds = getSharedPreferences("savedIds", Context.MODE_PRIVATE);
 
         if (!savedIds.getString("username", "").isEmpty() && !savedIds.getString("password", "").isEmpty()) {
@@ -55,41 +54,63 @@ public class LoginActivity extends AppCompatActivity {
             usernameEditText.setText(savedIds.getString("username", ""));
             passwordEditText.setText(savedIds.getString("password", ""));
         }
-
-        //A REUTILISER POUR LES REQUETES API
-        /*loginButton.setOnClickListener(new View.OnClickListener() {
-                                           @Override
-                                           public void onClick(View view) {
-                                               sendAndRequestResponse();
-                                           }
-
-                                        }
-        );*/
-
-
+        SharedPreferences.Editor edit = savedIds.edit();
+        edit.remove("token");
+        edit.remove("role");
+        edit.remove("id");
+        edit.apply();
 
 
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (usernameEditText.getText().toString().equals("admin") && passwordEditText.getText().toString().equals("admin")) {
-                    SharedPreferences.Editor edit = savedIds.edit();
-                    if (checkBox.isChecked()) {
-                        edit.putString("username", usernameEditText.getText().toString());
-                        edit.putString("password", passwordEditText.getText().toString());
-                    } else {
-                        edit.remove("username");
-                        edit.remove("password");
-                    }
-                    edit.apply();
 
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
+                    RequestQueue queue = Volley.newRequestQueue(getBaseContext());
+
+                    StringRequest request = new StringRequest(Request.Method.POST, API_URL,
+                            new Response.Listener<String>() {
+                                @Override
+                                public void onResponse(String response) {
+                                    try {
+                                        JSONObject jsonResponse = new JSONObject(response);
+                                        SharedPreferences.Editor edit = savedIds.edit();
+                                        edit.putString("token", jsonResponse.getString("token"));
+                                        edit.putString("role", jsonResponse.getString("role"));
+                                        edit.putString("id", jsonResponse.getString("id"));
+                                        if (checkBox.isChecked()) {
+                                            edit.putString("username", usernameEditText.getText().toString());
+                                            edit.putString("password", passwordEditText.getText().toString());
+                                        } else {
+                                            edit.remove("username");
+                                            edit.remove("password");
+                                        }
+                                        edit.apply();
+                                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } catch (JSONException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            },
+                            new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    Toast.makeText(getBaseContext(), "Erreur lors de la connexion.", Toast.LENGTH_LONG).show();
+                                }
+                            }) {
+                        @Override
+                        protected Map<String, String> getParams() throws AuthFailureError {
+                            Map<String, String> params = new HashMap<>();
+                            params.put("username", usernameEditText.getText().toString());
+                            params.put("password", passwordEditText.getText().toString());
+                            return params;
+                        }
+                    };
 
 
+                    queue.add(request);
                 }
-            }
         });
     }
 }
