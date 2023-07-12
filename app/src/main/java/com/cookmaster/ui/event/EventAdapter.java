@@ -5,22 +5,19 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 
 import com.cookmaster.R;
 import com.cookmaster.classes.Event;
-import com.cookmaster.classes.Recipe;
-import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class EventAdapter extends BaseAdapter {
 
-    private ArrayList<Event> eventArrayList;
-    private Context context;
+    private final ArrayList<Event> eventArrayList;
+    private final Context context;
 
     public EventAdapter(ArrayList<Event> eventArrayList, Context context) {
         this.eventArrayList = eventArrayList;

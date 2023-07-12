@@ -5,7 +5,6 @@ import android.nfc.Tag;
 import android.nfc.tech.NfcA;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +27,6 @@ import java.util.Random;
 public class NfcFragment extends Fragment implements NfcAdapter.ReaderCallback {
 
     private NfcAdapter nfcAdapter;
-    private Button btnread;
-    private Button btnwrite;
     private TextView textView;
 
     private ImageView ivGame;
@@ -45,8 +42,8 @@ public class NfcFragment extends Fragment implements NfcAdapter.ReaderCallback {
         binding = FragmentNfcBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         nfcAdapter = NfcAdapter.getDefaultAdapter(requireContext());
-        btnread = root.findViewById(R.id.btnread);
-        btnwrite = root.findViewById(R.id.btnwrite);
+        Button btnread = root.findViewById(R.id.btnread);
+        Button btnwrite = root.findViewById(R.id.btnwrite);
         textView = root.findViewById(R.id.text_nfc);
         ivGame = root.findViewById(R.id.ivGame);
 
@@ -60,14 +57,13 @@ public class NfcFragment extends Fragment implements NfcAdapter.ReaderCallback {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        // Désactiver la détection du tag NFC après 5 secondes
                         disableNfcDetection();
                         if (textView.getText().toString().equals("Recherche du tag NFC en cours...")) {
                             updateTextView("Aucun NFC détecté.");
                         }
                         actionType = 0;
                     }
-                }, 5000); // Attendre 5 secondes (5000 millisecondes)
+                }, 5000);
             }
         });
 
@@ -81,14 +77,13 @@ public class NfcFragment extends Fragment implements NfcAdapter.ReaderCallback {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        // Désactiver la détection du tag NFC après 5 secondes
                         disableNfcDetection();
                         if (textView.getText().toString().equals("Recherche du tag NFC en cours...")) {
                             updateTextView("Aucun NFC détecté.");
                         }
                         actionType = 0;
                     }
-                }, 5000); // Attendre 5 secondes (5000 millisecondes)
+                }, 5000);
             }
         });
 
@@ -130,16 +125,10 @@ public class NfcFragment extends Fragment implements NfcAdapter.ReaderCallback {
                     nfcA.connect();
 
                     int page = 7;
-
-                    // Lire la page spécifiée du tag
                     byte[] readCommand = {(byte) 0x30, (byte) page};
                     byte[] readResponse = nfcA.transceive(readCommand);
-
-                    // Vérifier la réponse
                     if (readResponse != null && readResponse.length >= 4) {
-                        byte[] payload = Arrays.copyOfRange(readResponse, 0, 4); // Récupérer les données utiles
-
-                        // Convertir les données en chaîne de caractères UTF-8
+                        byte[] payload = Arrays.copyOfRange(readResponse, 0, 4);
                         String data = new String(payload, StandardCharsets.UTF_8);
 
                         switch(data){
@@ -167,41 +156,31 @@ public class NfcFragment extends Fragment implements NfcAdapter.ReaderCallback {
                                     updateTextView("Données non reconnues");
                         }
                     } else {
-                        // Aucune donnée lue
                         updateTextView("Aucune donnée lue");
                     }
-
-                    // Fermer la connexion avec le tag
                     nfcA.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
             } else {
-                // Le tag NFC ne prend pas en charge la technologie NFC-A
                 updateTextView("Tag NFC incompatible");
             }
         } else if (actionType == 2) {
             NfcA nfcA = NfcA.get(tag);
             if (nfcA != null) {
                 try {
-                    Log.e("NFC", "I'm in");
                     nfcA.connect();
-                    // Remplir les octets restants avec des zéros si nécessaire
                     byte[] payload = new byte[7];
                     byte[] colorBytes = generateCode();
                     System.arraycopy(colorBytes, 0, payload, 0, colorBytes.length);
 
-                    // Écrire les données sur la page spécifiée du tag
-                    byte[] writeCommand = {(byte) 0xA2, (byte) 7, payload[0], payload[1], payload[2], payload[3]}; // Commande d'écriture
+                    byte[] writeCommand = {(byte) 0xA2, (byte) 7, payload[0], payload[1], payload[2], payload[3]};
                     byte[] writeResponse = nfcA.transceive(writeCommand);
-
-                    // Vérifier la réponse
                     if (writeResponse != null && writeResponse.length > 0 && (writeResponse[0] & 0x0F) == 0x0A) {
                         updateTextView("Écriture réussie");
                     } else {
                         updateTextView("Échec de l'écriture");
                     }
-                    // Fermer la connexion avec le tag
                     nfcA.close();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -209,7 +188,6 @@ public class NfcFragment extends Fragment implements NfcAdapter.ReaderCallback {
             }
 
             else{
-                // Le tag NFC ne prend pas en charge la technologie NFC-A
                 updateTextView("Tag NFC incompatible");
             }
         }

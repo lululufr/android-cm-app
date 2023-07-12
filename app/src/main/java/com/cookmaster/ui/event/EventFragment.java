@@ -3,19 +3,16 @@ package com.cookmaster.ui.event;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
@@ -26,12 +23,8 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cookmaster.R;
 import com.cookmaster.classes.Event;
-import com.cookmaster.classes.Ingredient;
-import com.cookmaster.classes.Recipe;
 import com.cookmaster.databinding.FragmentEventBinding;
 import com.cookmaster.ui.event.openevent.OpenEventFragment;
-import com.cookmaster.ui.recipe.RecipeAdapter;
-import com.cookmaster.ui.recipe.openrecipe.OpenRecipeFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -46,9 +39,7 @@ public class EventFragment extends Fragment {
 
     private EventAdapter eventAdapter;
 
-    private ListView lv_event;
-
-    private ArrayList<Event> eventArrayList = new ArrayList<>();
+    private final ArrayList<Event> eventArrayList = new ArrayList<>();
 
     private static final String URL = "https://cookmaster.lululu.fr/api/event/";
 
@@ -58,15 +49,16 @@ public class EventFragment extends Fragment {
         binding = FragmentEventBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         getRecipe();
-        this.lv_event = root.findViewById(R.id.lv_event);
+        ListView lv_event = root.findViewById(R.id.lv_event);
         eventAdapter = new EventAdapter(eventArrayList, getContext());
-        this.lv_event.setAdapter(eventAdapter);
-        this.lv_event.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        lv_event.setAdapter(eventAdapter);
+        lv_event.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 OpenEventFragment openEventFragment = new OpenEventFragment();
                 FragmentManager fragmentManager = getParentFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.setReorderingAllowed(true);
                 Bundle bundle = new Bundle();
                 bundle.putString("json", eventArrayList.get(i).eventToJson());
                 openEventFragment.setArguments(bundle);
@@ -80,7 +72,6 @@ public class EventFragment extends Fragment {
 
     public void getRecipe() {
         RequestQueue file = Volley.newRequestQueue(requireActivity());
-        Log.e("Test1", URL);
 
         StringRequest r = new StringRequest(Request.Method.GET, URL, new Response.Listener<String>() {
             @Override
@@ -89,8 +80,6 @@ public class EventFragment extends Fragment {
                     eventAdapter.clear();
 
                     JSONObject jso = new JSONObject(response);
-                    String urlEvents = jso.getString("events");
-                    Log.e("Test2", urlEvents);
 
                     JSONArray events = jso.getJSONArray("events");
                     for(int i = 0; i < events.length(); i++){
@@ -107,20 +96,17 @@ public class EventFragment extends Fragment {
                     }
 
                 }catch(Exception e){
-                    Log.e("Test2", "OOOOOAAAAAA");
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("Test2", "Erreur");
             }
 
         })
         {@Override
         public Map<String, String> getHeaders() throws AuthFailureError {
             SharedPreferences savedIds = requireActivity().getSharedPreferences("savedIds", Context.MODE_PRIVATE);
-            Log.e("Test2", savedIds.getString("token", null));
 
             Map<String, String> headers = new HashMap<>();
             headers.put("Authorization", "Bearer " + savedIds.getString("token", null));

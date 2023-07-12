@@ -15,8 +15,8 @@ import java.util.ArrayList;
 
 public class MessageAdapter extends BaseAdapter {
 
-    private ArrayList<Message> messageArrayList;
-    private Context context;
+    private final ArrayList<Message> messageArrayList;
+    private final Context context;
 
     public MessageAdapter(ArrayList<Message> messageArrayList, Context context) {
         this.messageArrayList = messageArrayList;
@@ -44,21 +44,33 @@ public class MessageAdapter extends BaseAdapter {
             LayoutInflater inflater = LayoutInflater.from(this.context);
             view = inflater.inflate(R.layout.item_message, null);
         }
-        TextView tv_from = view.findViewById(R.id.tv_from);
-        TextView tv_content = view.findViewById(R.id.tv_content);
+        TextView tv_from_left = view.findViewById(R.id.tv_from_left);
+        TextView tv_content_left = view.findViewById(R.id.tv_content_left);
+
+        TextView tv_from_right = view.findViewById(R.id.tv_from_right);
+        TextView tv_content_right = view.findViewById(R.id.tv_content_right);
 
         Message current = (Message)getItem(i);
         SharedPreferences savedIds = context.getSharedPreferences("savedIds", Context.MODE_PRIVATE);
-        tv_content.setText(current.getContent());
         if (current.getFromId() == savedIds.getInt("id", 0)){
-            tv_from.setText("Vous");
-            tv_content.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-            tv_from.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+            tv_content_right.setVisibility(View.VISIBLE);
+            tv_from_right.setVisibility(View.VISIBLE);
+            tv_from_right.setText("Vous");
+            tv_content_right.setText(current.getContent());
+            tv_content_right.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+            tv_from_right.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+            tv_from_left.setVisibility(View.GONE);
+            tv_content_left.setVisibility(View.GONE);
         }
         else {
-            tv_from.setText(current.getFromName());
-            tv_content.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
-            tv_from.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+            tv_from_left.setVisibility(View.VISIBLE);
+            tv_content_left.setVisibility(View.VISIBLE);
+            tv_from_left.setText(current.getFromName());
+            tv_content_left.setText(current.getContent());
+            tv_content_left.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+            tv_from_left.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+            tv_from_right.setVisibility(View.GONE);
+            tv_content_right.setVisibility(View.GONE);
         }
 
         return view;

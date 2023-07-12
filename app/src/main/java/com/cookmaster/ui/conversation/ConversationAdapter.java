@@ -10,16 +10,14 @@ import android.widget.TextView;
 
 import com.cookmaster.R;
 import com.cookmaster.classes.Conversation;
-import com.cookmaster.classes.Message;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 public class ConversationAdapter extends BaseAdapter {
 
-    private ArrayList<Conversation> conversationArrayList;
-    private Context context;
+    private final ArrayList<Conversation> conversationArrayList;
+    private final Context context;
 
     public ConversationAdapter(ArrayList<Conversation> conversationArrayList, Context context) {
         this.conversationArrayList = conversationArrayList;

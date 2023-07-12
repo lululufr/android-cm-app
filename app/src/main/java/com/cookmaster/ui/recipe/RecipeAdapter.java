@@ -9,12 +9,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.cookmaster.R;
-import com.cookmaster.classes.Message;
 import com.cookmaster.classes.Recipe;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class RecipeAdapter extends BaseAdapter {

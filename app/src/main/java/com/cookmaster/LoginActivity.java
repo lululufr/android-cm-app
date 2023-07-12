@@ -4,12 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,7 +19,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.squareup.picasso.Picasso;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -31,7 +28,6 @@ import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
 
-    private Button loginButton;
     private EditText usernameEditText;
     private EditText passwordEditText;
 
@@ -43,7 +39,7 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        loginButton = findViewById(R.id.button_login);
+        Button loginButton = findViewById(R.id.button_login);
         usernameEditText = findViewById(R.id.editText_username);
         passwordEditText = findViewById(R.id.editText_password);
         checkBox = findViewById(R.id.checkBox);
@@ -67,6 +63,15 @@ public class LoginActivity extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (usernameEditText.getText().toString().isEmpty() || passwordEditText.getText().toString().isEmpty()) {
+                    if (usernameEditText.getText().toString().isEmpty()) {
+                        usernameEditText.setError("Veuillez entrer un nom d'utilisateur.");
+                    }
+                    if (passwordEditText.getText().toString().isEmpty()) {
+                        passwordEditText.setError("Veuillez entrer un mot de passe.");
+                    }
+                    return;
+                }
 
                     RequestQueue queue = Volley.newRequestQueue(getBaseContext());
 

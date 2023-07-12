@@ -3,15 +3,12 @@ package com.cookmaster.ui.conversation.message;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -21,6 +18,7 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cookmaster.R;
@@ -28,6 +26,7 @@ import com.cookmaster.classes.Message;
 import com.cookmaster.databinding.FragmentMessageBinding;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -39,8 +38,6 @@ public class MessageFragment extends Fragment {
     private FragmentMessageBinding binding;
     private ListView lv_message;
 
-    private Button btn_send;
-
     private EditText et_message;
 
     private int idTo;
@@ -49,7 +46,7 @@ public class MessageFragment extends Fragment {
 
 
     private static final String URL_GET = "https://cookmaster.lululu.fr/api/message/";
-    private static final String URL_POST = "https://cookmaster.lululu.fr/api/message/";
+    private static final String URL_POST = "https://cookmaster.lululu.fr/api/message/send/";
 
     private MessageAdapter messageAdapter;
     private ArrayList<Message> messageList = new ArrayList<>();
@@ -69,22 +66,25 @@ public class MessageFragment extends Fragment {
 
         this.lv_message = root.findViewById(R.id.lv_message);
         this.et_message = root.findViewById(R.id.et_message);
-        this.btn_send = root.findViewById(R.id.btn_send);
+        Button btn_send = root.findViewById(R.id.btn_send);
 
         getMessage();
         messageAdapter = new MessageAdapter(messageList, getContext());
         this.lv_message.setAdapter(messageAdapter);
-        this.lv_message.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                Message m = (Message)adapterView.getItemAtPosition(i);
-                Toast.makeText(getContext(), m.getContent(), Toast.LENGTH_SHORT).show();
-            }
-        });
-        this.btn_send.setOnClickListener(new View.OnClickListener() {
+
+        btn_send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (et_message.getText().toString().equals("")){
+                    return;
+                }
                 sendMessage();
+                et_message.setText("");
+                messageAdapter.clear();
+                getMessage();
+                messageAdapter = new MessageAdapter(messageList, getContext());
+                lv_message.setAdapter(messageAdapter);
+                et_message.clearFocus();
             }
         });
 
@@ -96,8 +96,7 @@ public class MessageFragment extends Fragment {
 
     public void getMessage(){
         RequestQueue file = Volley.newRequestQueue(requireActivity());
-        Log.e("Test1", URL_GET + idTo);
-        StringRequest r = new StringRequest(Request.Method.GET, URL_GET + idTo, new Response.Listener<String>() {
+        StringRequest rGet = new StringRequest(Request.Method.GET, URL_GET + idTo, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
                 try {
@@ -105,7 +104,6 @@ public class MessageFragment extends Fragment {
 
                     JSONObject jso = new JSONObject(response);
                     String urlMessage = jso.toString();
-                    Log.e("Test2", urlMessage);
                     JSONArray jsa = jso.getJSONArray("messages");
                     for(int i = 0; i < jsa.length(); i++){
                         JSONObject jso2 = jsa.getJSONObject(i);
@@ -119,27 +117,17 @@ public class MessageFragment extends Fragment {
                         messageList.add(m);
                     }
                     messageAdapter.notifyDataSetChanged();
+                    lv_message.smoothScrollToPosition(messageAdapter.getCount() - 1);
                 }catch(Exception e){
-                    Log.e("Test2", "OOOOOAAAAAA");
                 }
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.e("Test2", "Erreur");
             }
 
         })
-        {/*@Override
-        public Map<String, String> getParams() throws AuthFailureError {
-            SharedPreferences savedIds = requireActivity().getSharedPreferences("savedIds", Context.MODE_PRIVATE);
-
-            Map<String, String> params = new HashMap<>();
-            params.put("from", savedIds.getString("id", null));
-            params.put("to", String.valueOf(idTo));
-            params.put("content", et_message.getText().toString());
-            return params;
-        }*/
+        {
         @Override
         public Map<String, String> getHeaders() throws AuthFailureError {
             SharedPreferences savedIds = requireActivity().getSharedPreferences("savedIds", Context.MODE_PRIVATE);
@@ -151,57 +139,44 @@ public class MessageFragment extends Fragment {
         }
             ;   };
 
-        file.add(r);
+        file.add(rGet);
     }
 
-    public void sendMessage(){
-RequestQueue file = Volley.newRequestQueue(requireActivity());
-        Log.e("Test1", URL_POST);
-        StringRequest r = new StringRequest(Request.Method.POST, URL_POST, new Response.Listener<String>() {
-            @Override
-            public void onResponse(String response) {
-                try {
+    public void sendMessage() {
+        RequestQueue file = Volley.newRequestQueue(requireActivity());
 
-                    JSONObject jso = new JSONObject(response);
-                    String urlMessage = jso.getString("message");
-                    Log.e("Test2", urlMessage);
-                    JSONArray jsa = jso.getJSONArray("message");
-                    for(int i = 0; i < jsa.length(); i++){
-                        JSONObject jso2 = jsa.getJSONObject(i);
-                        Message m = new Message(
-                                jso2.getString("from_name"),
-                                jso2.getInt("from_id"),
-                                jso2.getString("to_name"),
-                                jso2.getInt("to_id"), jso2.getString("content"),
-                                jso2.getString("created_at"));
-                        messageList.add(m);
-                    }
-                    messageAdapter.notifyDataSetChanged();
-                }catch(Exception e){
-                    Log.e("Test2", "OOOOOAAAAAA");
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.e("Test2", "Erreur");
-            }
-
-        })
-        {@Override
-        public Map<String, String> getHeaders() throws AuthFailureError {
-            SharedPreferences savedIds = requireActivity().getSharedPreferences("savedIds", Context.MODE_PRIVATE);
-
-            Map<String, String> headers = new HashMap<>();
-            headers.put("Authorization", "Bearer " + savedIds.getString("token", null));
-            headers.put("Content-Type", "application/json");
-            return headers;
+        JSONObject requestBody = new JSONObject();
+        try {
+            requestBody.put("message", et_message.getText().toString());
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-            ;   };
 
-        file.add(r);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, URL_POST + idTo, requestBody,
+                new Response.Listener<JSONObject>() {
+                    @Override
+                    public void onResponse(JSONObject response) {
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                    }
+                }) {
+            @Override
+            public Map<String, String> getHeaders() throws AuthFailureError {
+                SharedPreferences savedIds = requireActivity().getSharedPreferences("savedIds", Context.MODE_PRIVATE);
 
+                Map<String, String> headers = new HashMap<>();
+                headers.put("Authorization", "Bearer " + savedIds.getString("token", null));
+                headers.put("Content-Type", "application/json");
+                return headers;
+            }
+        };
+
+        file.add(request);
     }
+
 
 
     @Override

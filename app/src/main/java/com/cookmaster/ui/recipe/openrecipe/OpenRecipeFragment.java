@@ -1,7 +1,6 @@
 package com.cookmaster.ui.recipe.openrecipe;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,14 +26,6 @@ public class OpenRecipeFragment extends Fragment {
 
     private FragmentOpenRecipeBinding binding;
 
-    private TextView tv_recipe_name;
-    private TextView tv_description;
-    private TextView tv_ingredient;
-    private TextView tv_recipe_tags;
-    private ImageView iv_food_image;
-
-
-
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -43,16 +34,15 @@ public class OpenRecipeFragment extends Fragment {
 
         View root = binding.getRoot();
 
-        this.tv_recipe_name = root.findViewById(R.id.tv_event_name);
-        this.tv_description = root.findViewById(R.id.tv_recette);
-        this.tv_ingredient = root.findViewById(R.id.tv_chef);
-        this.tv_recipe_tags = root.findViewById(R.id.tv_recipe_tags);
-        this.iv_food_image = root.findViewById(R.id.iv_food_image);
+        TextView tv_recipe_name = root.findViewById(R.id.tv_name);
+        TextView tv_description = root.findViewById(R.id.tv_description);
+        TextView tv_ingredient = root.findViewById(R.id.tv_recette);
+        TextView tv_recipe_tags = root.findViewById(R.id.tv_recipe_tags);
+        ImageView iv_food_image = root.findViewById(R.id.iv_food_image);
 
 
         Bundle arguments = getArguments();
         try {
-            Log.e("JSON", arguments.getString("json", null));
             JSONObject jsoRecipe = new JSONObject(arguments.getString("json", null));
 
             ArrayList<Ingredient> ingredients = new ArrayList<>();
@@ -72,7 +62,6 @@ public class OpenRecipeFragment extends Fragment {
             }
             Recipe recipe = new Recipe(jsoRecipe.getString("name"), ingredients, tags, jsoRecipe.getString("description"), jsoRecipe.getString("urlImage"));
 
-            Log.e("Recipe", recipe.getName());
             tv_recipe_name.setText(recipe.getName());
             tv_description.setText(recipe.getDescription());
             tv_ingredient.setText(recipe.ingredientsToString());
@@ -82,9 +71,6 @@ public class OpenRecipeFragment extends Fragment {
         } catch (JSONException e) {
             throw new RuntimeException(e);
         }
-
-
-
 
         return root;
     }
