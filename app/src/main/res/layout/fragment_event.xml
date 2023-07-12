@@ -6,9 +6,12 @@
     android:layout_height="match_parent"
     tools:context=".ui.event.EventFragment">
 
-<ListView
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:id="@+id/lv_event"/>
+    <ListView
+        android:id="@+id/lv_event"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

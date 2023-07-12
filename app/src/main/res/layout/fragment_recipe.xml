@@ -4,11 +4,15 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:backgroundTint="@color/black"
     tools:context=".ui.recipe.RecipeFragment">
 
     <ListView
+        android:id="@+id/lv_recipe"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lv_recipe"/>
+        android:layout_marginBottom="64dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

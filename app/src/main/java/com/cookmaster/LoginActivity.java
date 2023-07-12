@@ -54,6 +54,9 @@ public class LoginActivity extends AppCompatActivity {
             usernameEditText.setText(savedIds.getString("username", ""));
             passwordEditText.setText(savedIds.getString("password", ""));
         }
+        else if (!savedIds.getString("username", "").isEmpty()){
+            usernameEditText.setText(savedIds.getString("username", ""));
+        }
         SharedPreferences.Editor edit = savedIds.edit();
         edit.remove("token");
         edit.remove("role");
@@ -76,12 +79,11 @@ public class LoginActivity extends AppCompatActivity {
                                         SharedPreferences.Editor edit = savedIds.edit();
                                         edit.putString("token", jsonResponse.getString("token"));
                                         edit.putString("role", jsonResponse.getString("role"));
-                                        edit.putString("id", jsonResponse.getString("id"));
+                                        edit.putInt("id", jsonResponse.getInt("id"));
+                                        edit.putString("username", usernameEditText.getText().toString());
                                         if (checkBox.isChecked()) {
-                                            edit.putString("username", usernameEditText.getText().toString());
                                             edit.putString("password", passwordEditText.getText().toString());
                                         } else {
-                                            edit.remove("username");
                                             edit.remove("password");
                                         }
                                         edit.apply();

@@ -58,7 +58,6 @@ public class RecipeFragment extends Fragment {
 
         binding = FragmentRecipeBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
-
         getRecipe();
 
         this.lv_recipe = root.findViewById(R.id.lv_recipe);
@@ -70,11 +69,11 @@ public class RecipeFragment extends Fragment {
                 OpenRecipeFragment openRecipeFragment = new OpenRecipeFragment();
                 FragmentManager fragmentManager = getParentFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                /*Bundle bundle = new Bundle();
-                bundle.putInt("toId", conversationList.get(i).getToId());
-                bundle.putString("toName", conversationList.get(i).getToName());
-                openRecipeFragment.setArguments(bundle);*/
+                Bundle bundle = new Bundle();
+                bundle.putString("json", recipesList.get(i).recipeToJson());
+                openRecipeFragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, openRecipeFragment);
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });
@@ -103,7 +102,11 @@ public class RecipeFragment extends Fragment {
                         JSONArray ingredientsJson = recipe.getJSONArray("ingredients");
                         for(int j = 0; j < ingredientsJson.length(); j++){
                             JSONObject ingredient = ingredientsJson.getJSONObject(j);
-                            ingredients.add(new Ingredient(ingredient.getString("ingredients_name"), ingredient.getInt("amount"), ingredient.getString("unit")));
+                            if (ingredient.getString("unit").equals("null"))
+                                ingredients.add(new Ingredient(ingredient.getString("ingredients_name"), ingredient.getInt("amount")));
+                            else {
+                                ingredients.add(new Ingredient(ingredient.getString("ingredients_name"), ingredient.getInt("amount"), ingredient.getString("unit")));
+                            }
                         }
 
                         ArrayList<String> tags = new ArrayList<>();

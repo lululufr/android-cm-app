@@ -25,9 +25,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.cookmaster.R;
 import com.cookmaster.classes.Message;
-import com.cookmaster.databinding.FragmentConversationBinding;
 import com.cookmaster.databinding.FragmentMessageBinding;
-import com.cookmaster.ui.conversation.ConversationAdapter;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -39,7 +37,7 @@ import java.util.Map;
 public class MessageFragment extends Fragment {
 
     private FragmentMessageBinding binding;
-    private ListView lv_conversation;
+    private ListView lv_message;
 
     private Button btn_send;
 
@@ -47,6 +45,7 @@ public class MessageFragment extends Fragment {
 
     private int idTo;
     private String nameTo;
+    private String yourName;
 
 
     private static final String URL_GET = "https://cookmaster.lululu.fr/api/message/";
@@ -64,16 +63,18 @@ public class MessageFragment extends Fragment {
         Bundle arguments = getArguments();
         idTo = arguments.getInt("toId", 0);
         nameTo = arguments.getString("toName", "");
+        SharedPreferences savedIds = requireActivity().getSharedPreferences("savedIds", Context.MODE_PRIVATE);
+        yourName = savedIds.getString("username", "");
 
 
-        this.lv_conversation = root.findViewById(R.id.lv_message);
+        this.lv_message = root.findViewById(R.id.lv_message);
         this.et_message = root.findViewById(R.id.et_message);
         this.btn_send = root.findViewById(R.id.btn_send);
 
         getMessage();
         messageAdapter = new MessageAdapter(messageList, getContext());
-        this.lv_conversation.setAdapter(messageAdapter);
-        this.lv_conversation.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        this.lv_message.setAdapter(messageAdapter);
+        this.lv_message.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                 Message m = (Message)adapterView.getItemAtPosition(i);
@@ -86,6 +87,8 @@ public class MessageFragment extends Fragment {
                 sendMessage();
             }
         });
+
+
         return root;
     }
 
@@ -103,10 +106,16 @@ public class MessageFragment extends Fragment {
                     JSONObject jso = new JSONObject(response);
                     String urlMessage = jso.toString();
                     Log.e("Test2", urlMessage);
-                    JSONArray jsa = jso.getJSONArray("message");
+                    JSONArray jsa = jso.getJSONArray("messages");
                     for(int i = 0; i < jsa.length(); i++){
                         JSONObject jso2 = jsa.getJSONObject(i);
-                        Message m = new Message(jso2.getString("username"), jso2.getInt("from_id"), jso2.getString("username"), jso2.getInt("to_id"), jso2.getString("content"), jso2.getString("created_at"));
+                        Message m = new Message(
+                                jso2.getInt("from_id") == idTo ? nameTo : yourName,
+                                jso2.getInt("from_id"),
+                                jso2.getInt("to_id") == idTo ? nameTo : yourName,
+                                jso2.getInt("to_id"),
+                                jso2.getString("content"),
+                                jso2.getString("created_at"));
                         messageList.add(m);
                     }
                     messageAdapter.notifyDataSetChanged();
@@ -121,16 +130,16 @@ public class MessageFragment extends Fragment {
             }
 
         })
-        {@Override
+        {/*@Override
         public Map<String, String> getParams() throws AuthFailureError {
             SharedPreferences savedIds = requireActivity().getSharedPreferences("savedIds", Context.MODE_PRIVATE);
 
             Map<String, String> params = new HashMap<>();
             params.put("from", savedIds.getString("id", null));
-            params.put("to", "1");
+            params.put("to", String.valueOf(idTo));
             params.put("content", et_message.getText().toString());
             return params;
-        }
+        }*/
         @Override
         public Map<String, String> getHeaders() throws AuthFailureError {
             SharedPreferences savedIds = requireActivity().getSharedPreferences("savedIds", Context.MODE_PRIVATE);
@@ -159,7 +168,12 @@ RequestQueue file = Volley.newRequestQueue(requireActivity());
                     JSONArray jsa = jso.getJSONArray("message");
                     for(int i = 0; i < jsa.length(); i++){
                         JSONObject jso2 = jsa.getJSONObject(i);
-                        Message m = new Message(jso2.getString("from_name"), jso2.getInt("from_id"), jso2.getString("to_name"), jso2.getInt("to_id"), jso2.getString("content"), jso2.getString("created_at"));
+                        Message m = new Message(
+                                jso2.getString("from_name"),
+                                jso2.getInt("from_id"),
+                                jso2.getString("to_name"),
+                                jso2.getInt("to_id"), jso2.getString("content"),
+                                jso2.getString("created_at"));
                         messageList.add(m);
                     }
                     messageAdapter.notifyDataSetChanged();
@@ -188,6 +202,7 @@ RequestQueue file = Volley.newRequestQueue(requireActivity());
         file.add(r);
 
     }
+
 
     @Override
     public void onDestroyView() {

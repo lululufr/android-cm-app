@@ -68,6 +68,7 @@ public class ConversationFragment extends Fragment {
                 bundle.putString("toName", conversationList.get(i).getToName());
                 messageFragment.setArguments(bundle);
                 fragmentTransaction.replace(R.id.nav_host_fragment_activity_main, messageFragment);
+                fragmentTransaction.addToBackStack(null);
                 fragmentTransaction.commit();
             }
         });

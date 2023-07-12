@@ -14,6 +14,7 @@ public class Recipe {
 
     private String urlImage;
 
+
     public Recipe(String name, ArrayList<Ingredient> ingredientList, ArrayList<String> tagList, String description, String urlImage) {
         this.name = name;
         this.ingredientList = ingredientList;
@@ -66,4 +67,46 @@ public class Recipe {
     public String toString() {
         return (name + " " + ingredientList + " " + tagList + " " + description + " " + urlImage);
     }
+
+    public String tagsToString() {
+        return String.join(", ", tagList);
+    }
+
+    public String ingredientsToString() {
+        String ingredients = "";
+        for (Ingredient ingredient : ingredientList) {
+            ingredients += ingredient.toString() + "\n";
+        }
+        return ingredients;
+    }
+
+    public String recipeToJson(){
+        String json = "{";
+        json += "\"name\":\"" + name + "\",";
+        json += "\"description\":\"" + description + "\",";
+        json += "\"urlImage\":\"" + urlImage + "\",";
+        json += "\"ingredients\":[";
+        for (int i = 0; i < ingredientList.size(); i++) {
+            Ingredient ingredient = ingredientList.get(i);
+            json += "{\"name\":\"" + ingredient.getName() + "\",";
+            json += "\"quantity\":\"" + ingredient.getQuantity() + "\",";
+            json += "\"unit\":\"" + ingredient.getUnit() + "\"}";
+            if (i < ingredientList.size() - 1) {
+                json += ",";
+            }
+        }
+        json += "],";
+        json += "\"tags\":[";
+        for (int i = 0; i < tagList.size(); i++) {
+            String tag = tagList.get(i);
+            json += "\"" + tag + "\"";
+            if (i < tagList.size() - 1) {
+                json += ",";
+            }
+        }
+        json += "]}";
+        return json;
+    }
+
+
 }

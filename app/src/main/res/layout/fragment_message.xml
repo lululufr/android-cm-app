@@ -9,26 +9,33 @@
     <ListView
         android:id="@+id/lv_message"
         android:layout_width="0dp"
-        android:layout_height="648dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/btn_send"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
     <Button
+        android:id="@+id/btn_send"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/btn_send"
+        android:layout_marginBottom="64dp"
         android:text="Send"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lv_message"
-        app:layout_constraintStart_toEndOf="@+id/et_message"/>
+        app:layout_constraintStart_toEndOf="@+id/et_message"
+        app:layout_constraintTop_toBottomOf="@+id/lv_message" />
+
     <EditText
+        android:id="@+id/et_message"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:id="@+id/et_message"
+        android:layout_marginBottom="64dp"
         android:hint="Message"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_send"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/lv_message"/>
+        app:layout_constraintTop_toBottomOf="@+id/lv_message" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

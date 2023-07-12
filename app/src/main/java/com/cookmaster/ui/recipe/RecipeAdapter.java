@@ -15,6 +15,7 @@ import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class RecipeAdapter extends BaseAdapter {
 
@@ -55,9 +56,10 @@ public class RecipeAdapter extends BaseAdapter {
         Recipe current = (Recipe)getItem(i);
 
         tv_name.setText(current.getName());
-        tv_tags.setText(current.getDescription());
-        Picasso.get().load(current.getUrlImage()).into(iv_food);
-
+        tv_tags.setText(current.tagsToString());
+        if (!Objects.equals(current.getUrlImage(), "https://cookmaster.lululu.fr/storage/null")){
+            Picasso.get().load(current.getUrlImage()).into(iv_food);
+        }
         return view;
 
     }

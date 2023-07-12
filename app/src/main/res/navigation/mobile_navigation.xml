@@ -27,4 +27,16 @@
         android:name="com.cookmaster.ui.nfc.NfcFragment"
         android:label="@string/title_nfc"
         tools:layout="@layout/fragment_nfc" />
+    <fragment
+        android:id="@+id/navigation_message"
+        android:name="com.cookmaster.ui.conversation.message.MessageFragment"
+        android:label="MessageFragment" />
+    <fragment
+        android:id="@+id/navigation_open_recipe"
+        android:name="com.cookmaster.ui.recipe.openrecipe.OpenRecipeFragment"
+        android:label="OpenRecipeFragment" />
+    <fragment
+        android:id="@+id/navigation_open_event"
+        android:name="com.cookmaster.ui.event.openevent.OpenEventFragment"
+        android:label="OpenEventFragment" />
 </navigation>

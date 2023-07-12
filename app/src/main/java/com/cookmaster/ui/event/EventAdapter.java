@@ -8,6 +8,8 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.core.content.ContextCompat;
+
 import com.cookmaster.R;
 import com.cookmaster.classes.Event;
 import com.cookmaster.classes.Recipe;
@@ -49,11 +51,17 @@ public class EventAdapter extends BaseAdapter {
 
         TextView tv_name = view.findViewById(R.id.tv_name);
         TextView tv_date = view.findViewById(R.id.tv_date);
+        TextView tv_location = view.findViewById(R.id.tv_location);
+        TextView tv_inscrit = view.findViewById(R.id.tv_inscrit);
 
         Event current = (Event)getItem(i);
 
         tv_name.setText(current.getName());
         tv_date.setText(current.getDate());
+        tv_location.setText(current.getLocation());
+        tv_inscrit.setText(current.getInscrit() ? "Inscrit" : "Non inscrit");
+        tv_inscrit.setTextColor(current.getInscrit() ? ContextCompat.getColor(context, R.color.green) : ContextCompat.getColor(context, R.color.red));
+
 
         return view;
 

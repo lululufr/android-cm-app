@@ -49,9 +49,17 @@ public class MessageAdapter extends BaseAdapter {
 
         Message current = (Message)getItem(i);
         SharedPreferences savedIds = context.getSharedPreferences("savedIds", Context.MODE_PRIVATE);
-
-        tv_from.setText(current.getFromId() == savedIds.getInt("id", 0) ? "Vous" : current.getFromName());
         tv_content.setText(current.getContent());
+        if (current.getFromId() == savedIds.getInt("id", 0)){
+            tv_from.setText("Vous");
+            tv_content.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+            tv_from.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+        }
+        else {
+            tv_from.setText(current.getFromName());
+            tv_content.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+            tv_from.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_START);
+        }
 
         return view;
 
